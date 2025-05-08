@@ -1,11 +1,11 @@
 <script lang="ts">
     import autoAnimate from "@formkit/auto-animate";
-
-    import { onMount } from "svelte";
+    import Hand from "./lib/Hand.svelte";
 
     let cardInput = "";
     let cards: number[] = [];
     let debounceTimer: number;
+    let handComponent: Hand;
 
     function parseCardCode(code: string): number | null {
         const suit = code[0].toUpperCase();
@@ -44,6 +44,13 @@
         updateCards();
     }
 
+    function fillOneSuite() {
+        const arr = [];
+        for (let i = 1; i <= 13; i++) arr.push(`S${i}`);
+        cardInput = arr.join(" ");
+        updateCards();
+    }
+
     function clearCards() {
         cardInput = "";
         cards = [];
@@ -54,7 +61,7 @@
     <h1 class="text-4xl mb-2">Game Kartu Tapi Bukan Soal Kalkulus</h1>
     <h2 class="text-lg mb-5">
         Kamu harus taruh satu kartu di meja, terus pindahin satu kartu ke belakang tanganmu.
-        Tujuan game-nya: cari urutan biar semua kartu keluar dengan urutan yang bener.
+        Tujuannya cari urutan biar semua kartu keluar dengan urutan yang bener.
     </h2>
 
     <div class="mb-4 space-y-2">
@@ -68,6 +75,7 @@
 
         <div class="space-x-2">
             <button on:click={fillAllCards}> Isi Semua Kartu </button>
+            <button on:click={fillOneSuite}> Isi Satu Golongan </button>
             <button on:click={clearCards}> Bersihin </button>
         </div>
     </div>
@@ -77,11 +85,22 @@
         class="grid grid-cols-13 gap-2 p-12 border-dashed border-2 border-stone-400 bg-blue-100/50"
         use:autoAnimate
     >
-        {#each cards as cardNumber}
-            <img src="/images/{cardNumber}.webp" alt="kartu {cardNumber}" />
+        {#each cards as cardNumber, index}
+            <img
+                draggable="false"
+                src="/images/{cardNumber}.webp"
+                alt="kartu {cardNumber}"
+                on:click={(e) => {
+                    if (e.shiftKey) {
+                        handComponent.addCardToFront(cardNumber);
+                    } else {
+                        handComponent.addCardToBack(cardNumber);
+                    }
+                    cards = cards.filter((_, i) => i !== index);
+                }}
+            />
         {/each}
     </div>
+    <hr class="border-dashed my-10" />
+    <Hand bind:this={handComponent} />
 </main>
-
-<style>
-</style>
