@@ -1,15 +1,29 @@
 <script lang="ts">
-    import autoAnimate from "@formkit/auto-animate";
-
+    import Placed from "./Placed.svelte";
     let handInput = "";
     let handCards: number[] = [];
     let debounceTimer: number;
-    function addCardToBack(cardNumber: number) {
+    let placedComponent: Placed;
+    let playTimer: number;
+    let counter = 0;
+    export function addCardToBack(cardNumber: number) {
         handCards = [...handCards, cardNumber];
+        updateInputFromCards();
     }
 
-    function addCardToFront(cardNumber: number) {
+    export function addCardToFront(cardNumber: number) {
         handCards = [cardNumber, ...handCards];
+        updateInputFromCards();
+    }
+
+    function updateInputFromCards() {
+        handInput = handCards
+            .map((num) => {
+                const suit = ["D", "C", "H", "S"][Math.floor(num / 13)];
+                const value = (num % 13) + 1;
+                return `${suit}${value}`;
+            })
+            .join(" ");
     }
 
     function parseCardCode(code: string): number | null {
@@ -43,6 +57,29 @@
     function clearHand() {
         handInput = "";
         handCards = [];
+        if (placedComponent) placedComponent.clear();
+    }
+
+    function playOne() {
+        if (handCards.length === 0) return;
+        const [first, ...rest] = handCards;
+        if (handCards.length <= 1) counter = 0;
+        if (counter % 2 === 0) {
+            placedComponent.addCard(first);
+            // Place the card
+            handCards = rest;
+        } else {
+            // Move to back
+            handCards = [...rest, first];
+        }
+        counter++;
+        updateInputFromCards();
+    }
+
+    function playAll() {
+        if (handCards.length === 0) return;
+        playOne();
+        playTimer = setTimeout(playAll, 100);
     }
 </script>
 
@@ -51,29 +88,31 @@
         type="text"
         bind:value={handInput}
         on:input={updateHand}
-        placeholder="Masukin kartu di tanganmu (contoh: D13 H1 S11)"
+        placeholder="Masukin kartu di deckmu (contoh: D13 H1 S11)"
         class="w-full p-2 border border-stone-300 rounded"
     />
 
     <div class="space-x-2">
-        <button on:click={clearHand}> Cuci Tangan </button>
+        <button on:click={clearHand}> Buang Semua Kartu </button>
     </div>
 </div>
 
-<h1 class="text-xl mb-4">Your Hand</h1>
+
+<Placed bind:this={placedComponent} />
+<h1 class="text-xl mb-4 mt-5">Deck</h1>
 <div
-    class="grid grid-cols-13 gap-2 p-12 border-dashed border-2 border-stone-400 bg-green-100/50 relative"
-    use:autoAnimate
+    class="grid grid-cols-13 gap-2 p-12 border-dashed border-2 border-red-500 bg-red-100/50 shadow-[inset_0_0_10px_#0003]"
 >
     {#each handCards as cardNumber, index}
         <img
+            draggable="false"
+            class={index == 0
+                ? counter % 2 === 0
+                    ? "outline-amber-500 outline-4 outline-offset-2"
+                    : "outline-lime-500 outline-4 outline-offset-2"
+                : ""}
             src="/images/{cardNumber}.webp"
             alt="card {cardNumber}"
-            draggable="false"
-            class={`
-                ${index === 0 ? "shadow-2xl outline-4 outline-amber-500" : ""}
-                cursor-move transition-transform duration-200
-            `}
         />
     {/each}
 </div>

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import autoAnimate from "@formkit/auto-animate";
+    // import autoAnimate from "@formkit/auto-animate";
     import Hand from "./lib/Hand.svelte";
 
     let cardInput = "";
@@ -60,7 +60,7 @@
 <main class="p-10">
     <h1 class="text-4xl mb-2">Game Kartu Tapi Bukan Soal Kalkulus</h1>
     <h2 class="text-lg mb-5">
-        Kamu harus taruh satu kartu di meja, terus pindahin satu kartu ke belakang tanganmu.
+        Kamu harus taruh satu kartu di meja, terus pindahin satu kartu ke belakang deckmu.
         Tujuannya cari urutan biar semua kartu keluar dengan urutan yang bener.
     </h2>
 
@@ -74,8 +74,8 @@
         />
 
         <div class="space-x-2">
-            <button on:click={fillAllCards}> Isi Semua Kartu </button>
-            <button on:click={fillOneSuite}> Isi Satu Golongan </button>
+            <button on:click={fillAllCards}> Taruh semua kartu </button>
+            <button on:click={fillOneSuite}> Taruh Satu Golongan </button>
             <button on:click={clearCards}> Bersihin </button>
         </div>
     </div>
