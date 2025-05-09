@@ -2,6 +2,8 @@
     import Placed from "./Placed.svelte";
     let handInput = "";
     let handCards: number[] = [];
+    let savedHandState: number[] = [];
+    let hasStoredState = false;
     let debounceTimer: number;
     let placedComponent: Placed;
     let playTimer: number;
@@ -54,9 +56,16 @@
         }, 300);
     }
 
-    function clearHand() {
-        handInput = "";
-        handCards = [];
+    function storeHandState() {
+        savedHandState = [...handCards];
+        hasStoredState = true;
+    }
+
+    function revertHand() {
+        handCards = [...savedHandState];
+        updateInputFromCards();
+        hasStoredState = false;
+        counter = 0;
         if (placedComponent) placedComponent.clear();
     }
 
