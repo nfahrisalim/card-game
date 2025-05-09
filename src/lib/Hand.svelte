@@ -123,7 +123,7 @@
     <textarea
         bind:value={handInput}
         on:input={updateHand}
-        placeholder="Masukin kartu ke dek kamu (contoh: D13 H1 S11)"
+        placeholder="Enter cards in your hand (e.g. D13 H1 S11)"
         class="w-full p-2 border border-stone-300 rounded h-[42px] min-h-[42px] resize-y"
     />
     <div class="flex gap-3 items-center">
@@ -132,7 +132,7 @@
         <button on:click={playOne}>Main Satu</button>
         <button on:click={playAll}>Mainkan Semua</button>
         <p>
-            Klik kartu di meja buat masukin ke tangan kamu. Tahan *shift* buat naro di belakang tangan.
+            Klik kartu di meja buat masukin ke dek. Tahan *shift* buat taruh di urutan ke belakang
         </p>
     </div>
 </div>
@@ -145,13 +145,15 @@
     {#each handCards as cardNumber, index}
         <img
             draggable="false"
-            class="{index === 0
+            class="{!isFlashLast && index === 0
                 ? counter % 2 === 0
                     ? 'outline-amber-500 outline-4 outline-offset-2 shadow-2xl'
                     : 'outline-lime-500 outline-4 outline-offset-2 shadow-2xl'
                 : isFlashLast && index === handCards.length - 1
                   ? 'outline-purple-500 outline-4 outline-offset-2 shadow-2xl'
-                  : ''} hover:scale-[1.1] hover:rotate-6 hover:shadow-lg duration-200"
+                  : index % 2 === 1
+                    ? 'outline-lime-500/50 outline-2 outline-offset-2'
+                    : ''} hover:scale-[1.1] hover:rotate-6 hover:shadow-lg duration-200"
             src="/images/{cardNumber}.webp"
             alt="card {cardNumber}"
         />
