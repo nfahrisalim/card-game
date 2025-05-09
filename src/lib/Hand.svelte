@@ -84,22 +84,25 @@
 </script>
 
 <div class="mb-4 space-y-2">
-    <input
-        type="text"
+    <textarea
         bind:value={handInput}
         on:input={updateHand}
-        placeholder="Masukin kartu di deckmu (contoh: D13 H1 S11)"
-        class="w-full p-2 border border-stone-300 rounded"
+        placeholder="Masukin kartu ke dek kamu (contoh: D13 H1 S11)"
+        class="w-full p-2 border border-stone-300 rounded h-[42px] min-h-[42px] resize-y"
     />
-
-    <div class="space-x-2">
-        <button on:click={clearHand}> Buang Semua Kartu </button>
+    <div class="flex gap-3 items-center">
+        <button on:click={clearHand}>Buang Semua Kartu</button>
+        <button on:click={playOne}>Main Satu Kartu</button>
+        <button on:click={playAll}>Mainkan Semua</button>
+        <p>
+            Klik kartu di meja buat masukin ke tangan kamu. Tahan *shift* buat naro di belakang tangan.
+        </p>
     </div>
 </div>
 
 
 <Placed bind:this={placedComponent} />
-<h1 class="text-xl mb-4 mt-5">Deck</h1>
+<h1 class="text-xl mb-4 mt-5">Hand</h1>
 <div
     class="grid grid-cols-13 gap-2 p-12 border-dashed border-2 border-red-500 bg-red-100/50 shadow-[inset_0_0_10px_#0003]"
 >
