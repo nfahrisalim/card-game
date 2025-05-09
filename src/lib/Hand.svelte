@@ -8,8 +8,6 @@
     let placedComponent: Placed;
     let playTimer: number;
     let counter = 0;
-    export let isSwapping = false;
-
     export function addCardToBack(cardNumber: number) {
         handCards = [...handCards, cardNumber];
         updateInputFromCards();
@@ -18,6 +16,11 @@
     export function addCardToFront(cardNumber: number) {
         handCards = [cardNumber, ...handCards];
         updateInputFromCards();
+    }
+
+    let isFlashLast = false;
+    export function setFlash(x: boolean) {
+        isFlashLast = x;
     }
 
     function updateInputFromCards() {
@@ -100,7 +103,6 @@
         handCards = [];
         counter = 0;
         hasStoredState = false;
-        updateInputFromCards();
     }
 
     function clearPlaced() {
@@ -125,35 +127,31 @@
         class="w-full p-2 border border-stone-300 rounded h-[42px] min-h-[42px] resize-y"
     />
     <div class="flex gap-3 items-center">
-        <button class="" on:click={clearHand}>Buang Semua Kartu</button>
-        <button class="" on:click={revertHand} disabled={!hasStoredState}
-            >Balikin</button
-        >
-        <button class="" on:click={playOne}>Main Satu Kartu</button>
-        <button class="" on:click={playAll}>Mainkan Semua</button>
+        <button on:click={clearHand}>Buang Semua Kartu</button>
+        <button on:click={revertHand} disabled={!hasStoredState}>Balikin</button>
+        <button on:click={playOne}>Main Satu</button>
+        <button on:click={playAll}>Mainkan Semua</button>
         <p>
-            Klik kartu di meja buat nambahin ke kartu. Tahan shift buat naro di belakang.
+            Klik kartu di meja buat masukin ke tangan kamu. Tahan *shift* buat naro di belakang tangan.
         </p>
     </div>
 </div>
 
 <Placed bind:this={placedComponent} />
-<h1 class="text-xl mb-4 mt-5">Pegangan</h1>
+<h1 class="text-xl mb-4 mt-5">Dek</h1>
 <div
     class="grid grid-cols-13 gap-2 p-4 border-dashed border-2 border-purple-500 bg-purple-100/50 shadow-[inset_0_0_10px_#0003]"
 >
     {#each handCards as cardNumber, index}
         <img
             draggable="false"
-            class="{index === 0 && isSwapping
-                ? 'outline-amber-500 outline-4 outline-offset-2 shadow-2xl'
-                : index === handCards.length - 1 && isSwapping
-                  ? 'outline-lime-500 outline-4 outline-offset-2 shadow-2xl'
-                  : index === 0
-                    ? counter % 2 === 0
-                        ? 'outline-amber-500 outline-4 outline-offset-2 shadow-2xl'
-                        : 'outline-lime-500 outline-4 outline-offset-2 shadow-2xl'
-                    : ''} hover:scale-[1.1] hover:rotate-6 hover:shadow-lg duration-200"
+            class="{index === 0
+                ? counter % 2 === 0
+                    ? 'outline-amber-500 outline-4 outline-offset-2 shadow-2xl'
+                    : 'outline-lime-500 outline-4 outline-offset-2 shadow-2xl'
+                : isFlashLast && index === handCards.length - 1
+                  ? 'outline-purple-500 outline-4 outline-offset-2 shadow-2xl'
+                  : ''} hover:scale-[1.1] hover:rotate-6 hover:shadow-lg duration-200"
             src="/images/{cardNumber}.webp"
             alt="card {cardNumber}"
         />
