@@ -8,6 +8,8 @@
     let placedComponent: Placed;
     let playTimer: number;
     let counter = 0;
+    export let isSwapping = false;
+
     export function addCardToBack(cardNumber: number) {
         handCards = [...handCards, cardNumber];
         updateInputFromCards();
@@ -71,6 +73,7 @@
 
     function playOne() {
         if (handCards.length === 0) return;
+        if (!hasStoredState) storeHandState();
         const [first, ...rest] = handCards;
         if (handCards.length <= 1) counter = 0;
         if (counter % 2 === 0) {
@@ -87,8 +90,30 @@
 
     function playAll() {
         if (handCards.length === 0) return;
+        if (!hasStoredState) storeHandState();
         playOne();
         playTimer = setTimeout(playAll, 100);
+    }
+
+    function clearHand() {
+        handInput = "";
+        handCards = [];
+        counter = 0;
+        hasStoredState = false;
+        updateInputFromCards();
+    }
+
+    function clearPlaced() {
+        if (placedComponent) placedComponent.clear();
+        counter = 0;
+    }
+
+    export function setHand(newHand: number[]) {
+        handCards = newHand;
+        updateInputFromCards();
+        counter = 0;
+        hasStoredState = false;
+        if (placedComponent) placedComponent.clear();
     }
 </script>
 
@@ -100,29 +125,35 @@
         class="w-full p-2 border border-stone-300 rounded h-[42px] min-h-[42px] resize-y"
     />
     <div class="flex gap-3 items-center">
-        <button on:click={clearHand}>Buang Semua Kartu</button>
-        <button on:click={playOne}>Main Satu Kartu</button>
-        <button on:click={playAll}>Mainkan Semua</button>
+        <button class="" on:click={clearHand}>Buang Semua Kartu</button>
+        <button class="" on:click={revertHand} disabled={!hasStoredState}
+            >Balikin</button
+        >
+        <button class="" on:click={playOne}>Main Satu Kartu</button>
+        <button class="" on:click={playAll}>Mainkan Semua</button>
         <p>
-            Klik kartu di meja buat masukin ke tangan kamu. Tahan *shift* buat naro di belakang tangan.
+            Klik kartu di meja buat nambahin ke kartu. Tahan shift buat naro di belakang.
         </p>
     </div>
 </div>
 
-
 <Placed bind:this={placedComponent} />
-<h1 class="text-xl mb-4 mt-5">Hand</h1>
+<h1 class="text-xl mb-4 mt-5">Pegangan</h1>
 <div
-    class="grid grid-cols-13 gap-2 p-12 border-dashed border-2 border-red-500 bg-red-100/50 shadow-[inset_0_0_10px_#0003]"
+    class="grid grid-cols-13 gap-2 p-4 border-dashed border-2 border-purple-500 bg-purple-100/50 shadow-[inset_0_0_10px_#0003]"
 >
     {#each handCards as cardNumber, index}
         <img
             draggable="false"
-            class={index == 0
-                ? counter % 2 === 0
-                    ? "outline-amber-500 outline-4 outline-offset-2"
-                    : "outline-lime-500 outline-4 outline-offset-2"
-                : ""}
+            class="{index === 0 && isSwapping
+                ? 'outline-amber-500 outline-4 outline-offset-2 shadow-2xl'
+                : index === handCards.length - 1 && isSwapping
+                  ? 'outline-lime-500 outline-4 outline-offset-2 shadow-2xl'
+                  : index === 0
+                    ? counter % 2 === 0
+                        ? 'outline-amber-500 outline-4 outline-offset-2 shadow-2xl'
+                        : 'outline-lime-500 outline-4 outline-offset-2 shadow-2xl'
+                    : ''} hover:scale-[1.1] hover:rotate-6 hover:shadow-lg duration-200"
             src="/images/{cardNumber}.webp"
             alt="card {cardNumber}"
         />

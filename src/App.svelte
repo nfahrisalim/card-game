@@ -55,6 +55,43 @@
         cardInput = "";
         cards = [];
     }
+
+    let highlightedCardIndex: number | null = null;
+
+    function calculateCorrectHand() {
+        if (cards.length === 0) return;
+
+        let deck = [...cards].reverse();
+        let hand: number[] = [];
+        let currentIndex = 0;
+
+        function animateStep() {
+            if (deck.length === 0) {
+                highlightedCardIndex = null;
+                return;
+            }
+
+            // Highlight the current card
+            highlightedCardIndex = currentIndex;
+
+            setTimeout(() => {
+                if (hand.length > 0) {
+                    hand.unshift(hand.pop()!);
+                }
+                hand.unshift(deck.pop()!);
+                handComponent.setHand(hand);
+
+                // Remove the card from display
+                cards = cards.filter((_, i) => i !== currentIndex);
+                currentIndex;
+
+                // Continue animation
+                setTimeout(animateStep, 600);
+            }, 400);
+        }
+
+        animateStep();
+    }
 </script>
 
 <main class="p-10">
@@ -65,13 +102,12 @@
     </h2>
 
     <div class="mb-4 space-y-2">
-        <input
-            type="text"
+        <textarea
             bind:value={cardInput}
             on:input={updateCards}
             placeholder="Masukin kode kartu (contoh: D13 H1 S11)"
-            class="w-full p-2 border border-stone-300 rounded"
-        />
+            class="w-full p-2 border border-stone-300 rounded h-[42px] min-h-[42px] resize-y"
+        ></textarea>
 
         <div class="space-x-2">
             <button on:click={fillAllCards}> Taruh semua kartu </button>
@@ -82,25 +118,32 @@
 
     <h1 class="text-xl mb-4">Meja</h1>
     <div
-        class="grid grid-cols-13 gap-2 p-12 border-dashed border-2 border-stone-400 bg-blue-100/50"
-        use:autoAnimate
+        class="grid grid-cols-13 gap-2 p-4 border-blue-500 border-2 border-dashed bg-blue-100/50 shadow-[inset_0_0_10px_#0003]"
     >
+        <!-- Ubah tampilan kartu di display -->
         {#each cards as cardNumber, index}
             <img
+                class="hover:scale-[1.1] hover:rotate-6 hover:shadow-lg duration-200
+                    {index === highlightedCardIndex
+                    ? 'outline outline-4 outline-offset-2 outline-amber-500 shadow-2xl'
+                    : ''}"
                 draggable="false"
                 src="/images/{cardNumber}.webp"
-                alt="kartu {cardNumber}"
+                alt="card {cardNumber}"
                 on:click={(e) => {
                     if (e.shiftKey) {
-                        handComponent.addCardToFront(cardNumber);
-                    } else {
                         handComponent.addCardToBack(cardNumber);
+                    } else {
+                        handComponent.addCardToFront(cardNumber);
                     }
                     cards = cards.filter((_, i) => i !== index);
                 }}
             />
         {/each}
     </div>
-    <hr class="border-dashed my-10" />
+    <div class="flex gap-2 items-center my-10">
+        <button on:click={calculateCorrectHand}>Generate Solution</button>
+        <hr class="border-dashed grow" />
+    </div>
     <Hand bind:this={handComponent} />
 </main>
