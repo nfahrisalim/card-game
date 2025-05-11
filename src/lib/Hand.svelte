@@ -85,7 +85,11 @@
             handCards = rest;
         } else {
             // Move to back
+            setFlash(true);
             handCards = [...rest, first];
+            setTimeout(() => {
+                setFlash(false);
+            }, 200);
         }
         counter++;
         updateInputFromCards();
@@ -119,43 +123,58 @@
     }
 </script>
 
-<div class="mb-4 space-y-2">
+<div class="mb-10 space-y-2">
     <textarea
         bind:value={handInput}
         on:input={updateHand}
-        placeholder="Enter cards in your hand (e.g. D13 H1 S11)"
-        class="w-full p-2 border border-stone-300 rounded h-[42px] min-h-[42px] resize-y"
+        placeholder="Masukkan kartu di dek-mu (contoh: D13 H1 S11)"
+        class="nes-textarea resize-y"
     />
     <div class="flex gap-3 items-center">
-        <button on:click={clearHand}>Buang Semua Kartu</button>
-        <button on:click={revertHand} disabled={!hasStoredState}>Balikin</button>
-        <button on:click={playOne}>Main Satu</button>
-        <button on:click={playAll}>Mainkan Semua</button>
-        <p>
+        <div class="grid grid-cols-4 gap-2">
+            <button class="nes-btn is-success" on:click={playOne}
+                >Main Satu</button
+            >
+            <button class="nes-btn is-primary" on:click={playAll}
+                >Mainkan Semua</button
+            >
+            <button class="nes-btn is-error" on:click={clearHand}
+                >Bersihkan</button
+            >
+            <button
+                class="nes-btn is-warning"
+                on:click={revertHand}
+                disabled={!hasStoredState}>Balikin</button
+            >
+        </div>
+        <p class="font-bold pt-3">
             Klik kartu di meja buat masukin ke dek. Tahan *shift* buat taruh di urutan ke belakang
         </p>
     </div>
 </div>
 
 <Placed bind:this={placedComponent} />
-<h1 class="text-xl mb-4 mt-5">Dek</h1>
+
 <div
-    class="grid grid-cols-13 gap-2 p-4 border-dashed border-2 border-purple-500 bg-purple-100/50 shadow-[inset_0_0_10px_#0003]"
+    class="nes-container with-title shadow-[inset_0_0_10px_#0004] bg-[#F7D51F33] mt-10"
 >
-    {#each handCards as cardNumber, index}
-        <img
-            draggable="false"
-            class="{!isFlashLast && index === 0
-                ? counter % 2 === 0
-                    ? 'outline-amber-500 outline-4 outline-offset-2 shadow-2xl'
-                    : 'outline-lime-500 outline-4 outline-offset-2 shadow-2xl'
-                : isFlashLast && index === handCards.length - 1
-                  ? 'outline-purple-500 outline-4 outline-offset-2 shadow-2xl'
-                  : index % 2 === 1
-                    ? 'outline-lime-500/50 outline-2 outline-offset-2'
-                    : ''} hover:scale-[1.1] hover:rotate-6 hover:shadow-lg duration-200"
-            src="/images/{cardNumber}.webp"
-            alt="card {cardNumber}"
-        />
-    {/each}
+    <p class="title font-bold -translate-y-2 scale-120 border-3">Hand</p>
+    <div class="grid grid-cols-13 gap-2">
+        {#each handCards as cardNumber, index}
+            <img
+                draggable="false"
+                class="{!isFlashLast && index === 0
+                    ? counter % 2 === 0
+                        ? 'outline-amber-500 outline-4 outline-offset-2 shadow-2xl'
+                        : 'outline-lime-500 outline-4 outline-offset-2 shadow-2xl'
+                    : isFlashLast && index === handCards.length - 1
+                      ? 'outline-purple-500 outline-4 outline-offset-2 shadow-2xl'
+                      : index % 2 === 1
+                        ? 'outline-lime-500/50 outline-2 outline-offset-2'
+                        : ''} hover:scale-[1.1] hover:rotate-6 hover:shadow-lg duration-200"
+                src="/images/{cardNumber}.webp"
+                alt="card {cardNumber}"
+            />
+        {/each}
+    </div>
 </div>

@@ -58,20 +58,20 @@
     }
 
     async function calculateCorrectHand(ms: number) {
-        // Store original deck order
+        // Simpan urutan deck yang ada
         const deck = [...cards];
         let hand: number[] = [];
 
-        // Clear any existing cards in hand
+        // Bersihkan semua kartu di dek
         handComponent.setHand([]);
 
-        // Animate the process
+        // Animasi
         for (let i = deck.length - 1; i >= 0; i--) {
-            // Highlight the card we're about to take
+            // Highlight kartu yang diambil
             highlightedCardIndex = i;
             await new Promise((r) => setTimeout(r, ms));
 
-            // If we have cards in hand, move last card to front
+            // Jika kita punya kartu di dek, ambil kartu terakhir dan taruh di depan
 
             if (hand.length > 0) {
                 handComponent.setFlash(true);
@@ -83,13 +83,13 @@
                 await new Promise((r) => setTimeout(r, ms));
             }
 
-            // Take card from deck and add to front of hand
+            // Ambil kartu dari dek dan taruh di depan
             hand.unshift(deck[i]);
             handComponent.setHand(hand);
             await new Promise((r) => setTimeout(r, ms));
         }
 
-        // Clear highlight
+        // Bersihkan highlight
         highlightedCardIndex = null;
     }
 </script>
@@ -105,50 +105,69 @@
         <textarea
             bind:value={cardInput}
             on:input={updateCards}
-            placeholder="Masukin kode kartu (contoh: D13 H1 S11)"
-            class="w-full p-2 border border-stone-300 rounded h-[42px] min-h-[42px] resize-y"
+            placeholder="Enter card codes (e.g. D13 H1 S11)"
+            class="nes-textarea resize-y"
         ></textarea>
 
         <div class="space-x-2">
-            <button on:click={fillAllCards}> Taruh semua kartu </button>
-            <button on:click={fillOneSuite}> Taruh Satu Golongan </button>
-            <button on:click={clearCards}> Bersihin </button>
+            <button class="nes-btn" on:click={fillAllCards}>
+                Taruh semua kartu
+            </button>
+            <button class="nes-btn" on:click={fillOneSuite}>
+                Taruh Satu Golongan
+            </button>
+            <button class="nes-btn is-error" on:click={clearCards}>
+                Bersihin
+            </button>
         </div>
     </div>
 
-    <h1 class="text-xl mb-4">Meja</h1>
     <div
-        class="grid grid-cols-13 gap-2 p-4 border-blue-500 border-2 border-dashed bg-blue-100/50 shadow-[inset_0_0_10px_#0003]"
+        class="nes-container with-title shadow-[inset_0_0_10px_#0004] bg-[#1F9CED22]"
     >
-        <!-- Update the card display in the template -->
-        {#each cards as cardNumber, index}
-            <img
-                class="hover:scale-[1.1] hover:rotate-6 hover:shadow-lg duration-200
+        <p class="title font-bold -translate-y-2 scale-120 border-3">Meja</p>
+        <div class="grid grid-cols-13 gap-2">
+            <!-- Perbarui tampilan kartu -->
+            {#each cards as cardNumber, index}
+                <img
+                    class="hover:scale-[1.1] hover:rotate-6 hover:shadow-lg duration-200
                     {index === highlightedCardIndex
-                    ? 'outline outline-4 outline-offset-2 outline-amber-500 shadow-2xl'
-                    : ''}"
-                draggable="false"
-                src="/images/{cardNumber}.webp"
-                alt="card {cardNumber}"
-                on:click={(e) => {
-                    if (e.shiftKey) {
-                        handComponent.addCardToBack(cardNumber);
-                    } else {
-                        handComponent.addCardToFront(cardNumber);
-                    }
-                    cards = cards.filter((_, i) => i !== index);
-                }}
-            />
-        {/each}
+                        ? 'outline outline-4 outline-offset-2 outline-amber-500 shadow-2xl'
+                        : ''}"
+                    draggable="false"
+                    src="/images/{cardNumber}.webp"
+                    alt="card {cardNumber}"
+                    on:click={(e) => {
+                        if (e.shiftKey) {
+                            handComponent.addCardToBack(cardNumber);
+                        } else {
+                            handComponent.addCardToFront(cardNumber);
+                        }
+                        cards = cards.filter((_, i) => i !== index);
+                    }}
+                />
+            {/each}
+        </div>
     </div>
+
     <div class="flex gap-2 items-center my-10">
-        <button on:click={calculateCorrectHand(50)}
-            >Generate Solution (fast)</button
+        <button
+            class="nes-btn is-primary"
+            on:click={() => calculateCorrectHand(50)}
+            >Mainkan Kartu Sekarang!</button
         >
-        <button on:click={calculateCorrectHand(500)}
-            >Generate Solution (slow)</button
+        <button class="nes-btn" on:click={() => calculateCorrectHand(500)}
+            >Strategikan Langkahmu</button
         >
-        <hr class="border-dashed grow" />
+        <hr class="border border-2 grow" />
     </div>
     <Hand bind:this={handComponent} />
+    <div class="mt-10">
+        <a href="https://github.com/nfahrisalim/game-of-cards.git" target="_blank">
+            <i class="nes-octocat animate is-small scale-50"></i>
+        </a>
+        <a href="https://nostalgic-css.github.io/NES.css/" target="_blank">
+            <i class="nes-jp-logo scale-75 -translate-y-5"></i>
+        </a>
+    </div>
 </main>
