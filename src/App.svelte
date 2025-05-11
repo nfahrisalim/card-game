@@ -105,7 +105,7 @@
         <textarea
             bind:value={cardInput}
             on:input={updateCards}
-            placeholder="Enter card codes (e.g. D13 H1 S11)"
+            placeholder="Masukin kode kartu (contoh: D13 H1 S11)"
             class="nes-textarea resize-y"
         ></textarea>
 
