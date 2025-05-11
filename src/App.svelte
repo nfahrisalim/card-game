@@ -1,5 +1,6 @@
 <script lang="ts">
-    // import autoAnimate from "@formkit/auto-animate";
+    import { flip } from "svelte/animate";
+    import { fade } from "svelte/transition";
     import Hand from "./lib/Hand.svelte";
 
     let cardInput = "";
@@ -127,12 +128,13 @@
     >
         <p class="title font-bold -translate-y-2 scale-120 border-3">Meja</p>
         <div class="grid grid-cols-13 gap-2">
-            <!-- Perbarui tampilan kartu -->
-            {#each cards as cardNumber, index}
+             {#each cards as cardNumber, index (cardNumber)}
                 <img
+                    animate:flip={{ duration: 300 }}
+                    transition:fade={{ duration: 200 }}
                     class="hover:scale-[1.1] hover:rotate-6 hover:shadow-lg duration-200
                     {index === highlightedCardIndex
-                        ? 'outline outline-4 outline-offset-2 outline-amber-500 shadow-2xl'
+                        ? 'outline-4 outline-offset-2 outline-amber-500 shadow-2xl'
                         : ''}"
                     draggable="false"
                     src="/images/{cardNumber}.webp"
@@ -159,7 +161,7 @@
         <button class="nes-btn" on:click={() => calculateCorrectHand(500)}
             >Strategikan Langkahmu</button
         >
-        <hr class="border border-2 grow" />
+         <hr class="border-2 grow" />
     </div>
     <Hand bind:this={handComponent} />
     <div class="mt-10">
