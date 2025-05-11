@@ -158,7 +158,7 @@
 <div
     class="nes-container with-title shadow-[inset_0_0_10px_#0004] bg-[#F7D51F33] mt-10"
 >
-    <p class="title font-bold -translate-y-2 scale-120 border-3">Hand</p>
+    <p class="title font-bold -translate-y-2 scale-120 border-3">Dek</p>
     <div class="grid grid-cols-13 gap-2">
         {#each handCards as cardNumber, index}
             <img
